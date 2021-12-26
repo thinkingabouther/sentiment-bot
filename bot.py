@@ -28,8 +28,10 @@ class Bot:
         self.updater.idle()
 
     def bop(self, update: Update, context: CallbackContext):
-        chat_id = update.message.chat.id
-        update.message.reply_text(self.sentiment_analyser.get_sentiment('Hello').sentiment)
+        docs_list = ['Hello', 'You are fucking retarded!']
+        results = self.sentiment_analyser.get_sentiment(docs_list)
+        for result in results:
+            update.message.reply_text(result.sentiment)
 
 
 if __name__ == '__main__':
