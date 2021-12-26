@@ -3,7 +3,6 @@ import os
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 from sentiment_analyser import SentimentAnalyzer
-from urllib.parse import urlparse
 
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['TOKEN']
