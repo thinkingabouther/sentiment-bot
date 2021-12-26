@@ -16,12 +16,13 @@ class SentimentAggregator:
         positive_count = sum(1 for i in sentiment_results if i.sentiment == "positive")
         negative_count = sum(1 for i in sentiment_results if i.sentiment == "negative")
         neutral_count = sum(1 for i in sentiment_results if i.sentiment == "neutral")
+        mixed_count = sum(1 for i in sentiment_results if i.sentiment == "mixed")
 
         positive_scores = [sentiment.confidence_scores.positive for sentiment in sentiment_results]
         negative_scores = [sentiment.confidence_scores.negative for sentiment in sentiment_results]
         neutral_scores = [sentiment.confidence_scores.neutral for sentiment in sentiment_results]
 
-        return AnalysisData(len(sentiment_results), positive_count, negative_count, neutral_count,
+        return AnalysisData(len(sentiment_results), positive_count, negative_count, neutral_count, mixed_count,
                             median(positive_scores), median(negative_scores), median(neutral_scores))
 
     def get_sentiments_list(self, video_id, max_comments):
