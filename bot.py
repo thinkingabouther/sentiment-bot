@@ -1,7 +1,8 @@
 import os
+import re
 
 from telegram import Update
-from sentiment_aggregator import SentimentAggregator
+from domain.sentiment_aggregator import SentimentAggregator
 from telegram.ext import Updater, CommandHandler, CallbackContext, ConversationHandler, MessageHandler, Filters
 
 PORT = int(os.environ.get('PORT', 5000))
@@ -54,8 +55,11 @@ class Bot:
     def bop(self, update: Update, context: CallbackContext):
         update.message.reply_text("bop умер, не пишите")
 
-    def analyse(self):
-        scores = self.sentiment_aggregator.aggregate_sentiments("dQw4w9WgXcQ")
+    def analyse(self, link, max_comments):
+        pattern = r"^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*"
+        p = re.compile(pattern)
+        video_id = p.search(link)
+        scores = self.sentiment_aggregator.aggregate_sentiments(video_id.group(0), max_comments)
         return "🤔 Что мы узнали:\n" \
                "🤯 Проанализировано комментариев {}\n" \
                "👍 Положительных комментариев {}\n" \
@@ -91,7 +95,7 @@ class Bot:
 
         context.user_data["max_comments"] = update.message.text
 
-        analysed_data = self.analyse()
+        analysed_data = self.analyse(context['link'], context['max_comments'])
 
         update.message.reply_text(
             analysed_data

@@ -10,8 +10,8 @@ class SentimentAggregator:
         self.sentiment_analyser = SentimentAnalyzer(sentiment_endpoint, sentiment_key)
         self.youtube_reader = YouTubeReader(youtube_endpoint, youtube_key)
 
-    def aggregate_sentiments(self, video_id: str) -> AnalysisData:
-        sentiment_results = self.get_sentiments_list(video_id)
+    def aggregate_sentiments(self, video_id: str, max_comments: int) -> AnalysisData:
+        sentiment_results = self.get_sentiments_list(video_id, max_comments)
 
         positive_count = sum(1 for i in sentiment_results if i.sentiment == "positive")
         negative_count = sum(1 for i in sentiment_results if i.sentiment == "negative")
@@ -24,7 +24,7 @@ class SentimentAggregator:
         return AnalysisData(len(sentiment_results), positive_count, negative_count, neutral_count,
                             median(positive_scores), median(negative_scores), median(neutral_scores))
 
-    def get_sentiments_list(self, video_id):
-        comments = self.youtube_reader.read_comments_by_id(video_id)
+    def get_sentiments_list(self, video_id, max_comments):
+        comments = self.youtube_reader.read_comments_by_id(video_id, max_comments)
         sentiment_results = self.sentiment_analyser.get_sentiment(comments)
         return sentiment_results
