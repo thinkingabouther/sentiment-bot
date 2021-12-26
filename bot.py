@@ -33,7 +33,7 @@ class Bot:
     def bop(self, update: Update, context: CallbackContext):
         update.message.reply_text("bop умер, не пишите")
 
-    def never_gonna(self, update):
+    def never_gonna(self, update, context):
         positive, neutral, negative = self.sentiment_aggregator.aggregate_sentiments("dQw4w9WgXcQ")
         reply_text = "Положительный = {}" \
                      "Нейтральный = {}" \
