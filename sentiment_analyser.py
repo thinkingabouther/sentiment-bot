@@ -8,4 +8,4 @@ class SentimentAnalyzer:
 
     def get_sentiment(self, text: str) -> AnalyzeSentimentResult:
         docs = self.text_analytics_client.analyze_sentiment([text], show_opinion_mining=True)
-        return docs
+        return docs[0]
