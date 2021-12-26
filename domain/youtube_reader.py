@@ -12,10 +12,11 @@ class YouTubeReader:
         r = requests.get(self.endpoint, params=params)
         data = r.json()
         result = [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in data['items']]
-        if "nextPageToken" in data:
+
+        while "nextPageToken" in data:
             params["pageToken"] = data["nextPageToken"]
-            new_page_data = requests.get(self.endpoint, params=params).json()
+            data = requests.get(self.endpoint, params=params).json()
             result.append(
-                [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in new_page_data['items']])
+                [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in data['items']])
 
         return result
