@@ -22,7 +22,6 @@ class Bot:
         dp = self.updater.dispatcher
 
         dp.add_handler(CommandHandler('bop', self.bop))
-        dp.add_handler(CommandHandler('sentiment', self.sentiment))
 
         conv_handler = ConversationHandler(
             entry_points=[CommandHandler('start', self.start)],
@@ -67,7 +66,7 @@ class Bot:
                "➡ Нейтральные {} \n" \
                "⬇ Отрицательные {}" \
             .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative,
-                    scores.positive_pc, scores.neutral_pc, scores.negative_pc);
+                    scores.positive_pc, scores.neutral_pc, scores.negative_pc)
 
     def start(self, update: Update, context: CallbackContext) -> int:
         """Start the conversation and ask user for input."""
