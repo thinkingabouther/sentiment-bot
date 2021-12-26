@@ -16,7 +16,7 @@ ENTERING_LINK, ENTERING_MAX_COMMENTS, GETTING_RESULT = range(3)
 def start(update: Update, context: CallbackContext) -> int:
     """Start the conversation and ask user for input."""
     update.message.reply_text(
-        "Enter link to YT video"
+        "Введите ссылке на YouTube видео"
     )
     return ENTERING_MAX_COMMENTS
     
@@ -25,13 +25,18 @@ def enter_max_comments(update: Update, context: CallbackContext) -> int:
     """Ask the user for a max comments count."""
     context.user_data['link'] = update.message.text
     update.message.reply_text(
-        'Enter max commetns value"'
+        'Введите максимальное количество анализируемых комментариев"'
     )
 
     return GETTING_RESULT
 
 def done(update: Update, context: CallbackContext) -> int:
     """Display the result."""
+
+    if not update.message.text[1:].isdigit():
+        update.message.reply_text("Это не число")
+        return GETTING_RESULT
+
     context.user_data["max_comments"] = update.message.text
     
     update.message.reply_text(
