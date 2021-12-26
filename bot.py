@@ -2,8 +2,7 @@ import os
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
-from sentiment_analyser import SentimentAnalyzer
-from youtube_reader import YouTubeReader
+from sentiment_aggregator import SentimentAggregator
 
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['TOKEN']
@@ -16,12 +15,12 @@ YOUTUBE_KEY = os.environ['YOUTUBE_KEY']
 
 class Bot:
     def __init__(self, port, token, app_url, endpoint, key, youtube_endpoint, youtube_key):
-        self.sentiment_analyser = SentimentAnalyzer(endpoint, key)
-        self.youtube_reader = YouTubeReader(youtube_endpoint, youtube_key)
+        self.sentiment_aggregator = SentimentAggregator(endpoint, key, youtube_endpoint, youtube_key)
         self.updater = Updater(TOKEN, use_context=True)
         dp = self.updater.dispatcher
 
         dp.add_handler(CommandHandler('bop', self.bop))
+        dp.add_handler(CommandHandler('never_gonna', self.never_gonna()))
 
         self.updater.start_webhook(listen="0.0.0.0",
                                    port=int(port),
@@ -32,13 +31,14 @@ class Bot:
         self.updater.idle()
 
     def bop(self, update: Update, context: CallbackContext):
-        docs_list = ['Hello', 'You are fucking retarded!']
-        results = self.sentiment_analyser.get_sentiment(docs_list)
-        for result in results:
-            update.message.reply_text(result.sentiment)
+        update.message.reply_text("bop умер, не пишите")
 
-    def get_comments(self, video_id):
-        self.youtube_reader.read_comments_by_id("dQw4w9WgXcQ")
+    def never_gonna(self, update):
+        positive, neutral, negative = self.sentiment_aggregator.aggregate_sentiments("dQw4w9WgXcQ")
+        reply_text = "Положительный = {}" \
+                     "Нейтральный = {}" \
+                     "Отрицательный = {}".format(positive, neutral, negative);
+        update.message.reply_text(reply_text)
 
 
 if __name__ == '__main__':
