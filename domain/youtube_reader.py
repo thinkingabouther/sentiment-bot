@@ -6,8 +6,16 @@ class YouTubeReader:
         self.key = key
         self.endpoint = endpoint
 
-    def read_comments_by_id(self, video_id, max_comments):
-        params = {'key': self.key, 'textFormat': 'plainText', 'part': 'snippet', 'video_id': video_id, 'maxResults': str(max_comments)}
+    def read_comments_by_id(self, video_id, comments_count):
+        params = {'key': self.key, 'textFormat': 'plainText', 'part': 'snippet', 'video_id': video_id,
+                  'maxResults': comments_count}
         r = requests.get(self.endpoint, params=params)
         data = r.json()
-        return [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in data['items']]
+        result = [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in data['items']]
+        if "nextPageToken" in data:
+            params["pageToken"] = data["nextPageToken"]
+            new_page_data = requests.get(self.endpoint, params=params).json()
+            result.append(
+                [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in new_page_data['items']])
+
+        return result
