@@ -12,12 +12,12 @@ class YouTubeReader:
         r = requests.get(self.endpoint, params=params)
         data = r.json()
         result = [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in data['items']]
-        params["maxResults"] = int(params["maxResults"]) - int(data["pageInfo"]["resultsPerPage"])
+        params["maxResults"] = int(params["maxResults"]) - int(data["pageInfo"]["totalResults"])
 
         while "nextPageToken" in data and len(result) < int(comments_count) and int(params["maxResults"])>0:
             params["pageToken"] = data["nextPageToken"]
             data = requests.get(self.endpoint, params=params).json()
             result += [item['snippet']['topLevelComment']['snippet']['textDisplay'] for item in data['items']]
-            params["maxResults"] = max(0,int(params["maxResults"]) - int(data["pageInfo"]["resultsPerPage"]))
+            params["maxResults"] = max(0,int(params["maxResults"]) - int(data["pageInfo"]["totalResults"]))
 
         return result
