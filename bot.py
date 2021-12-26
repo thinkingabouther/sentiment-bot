@@ -1,7 +1,9 @@
+import logging
 import os
+from urllib.parse import urlparse, parse_qs
 
 from telegram import Update
-from sentiment_aggregator import SentimentAggregator
+from domain.sentiment_aggregator import SentimentAggregator
 from telegram.ext import Updater, CommandHandler, CallbackContext, ConversationHandler, MessageHandler, Filters
 
 PORT = int(os.environ.get('PORT', 5000))
@@ -54,18 +56,20 @@ class Bot:
     def bop(self, update: Update, context: CallbackContext):
         update.message.reply_text("bop умер, не пишите")
 
-    def analyse(self):
-        scores = self.sentiment_aggregator.aggregate_sentiments("dQw4w9WgXcQ")
-        return "🤔 Что мы узнали:\n" \
-               "🤯 Проанализировано комментариев {}\n" \
-               "👍 Положительных комментариев {}\n" \
-               "👌 Нейтральных комментариев {}\n" \
-               "👎 Отрицательных комментариев {}\n" \
-               "‍👀 Степень уверенности в моих ответах\n" \
-               "⬆ Медианная уверенность в том, что комментарии положительные {}\n" \
-               "➡ Нейтральные {} \n" \
-               "⬇ Отрицательные {}" \
-            .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative,
+    def analyse(self, link, max_comments):
+        video_id = parse_qs(urlparse(link).query)['v'][0]
+        scores = self.sentiment_aggregator.aggregate_sentiments(video_id, max_comments)
+        return "🤔 Что мы узнали?\n" \
+               "🤯 Проанализировано комментариев: {}\n" \
+               "👍 Положительных комментариев: {}\n" \
+               "👌 Нейтральных комментариев: {}\n" \
+               "👎 Отрицательных комментариев: {}\n" \
+               "🍲 Смешанных комментариев: {}\n" \
+               "‍👀 Степень уверенности в моих ответах?\n" \
+               "⬆ Медианная уверенность в том, что комментарии положительные: {}\n" \
+               "➡ Нейтральные: {} \n" \
+               "⬇ Отрицательные: {}" \
+            .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative, scores.count_mixed,
                     scores.positive_pc, scores.neutral_pc, scores.negative_pc)
 
     def start(self, update: Update, context: CallbackContext) -> int:
@@ -90,8 +94,10 @@ class Bot:
             return GETTING_RESULT
 
         context.user_data["max_comments"] = update.message.text
-
-        analysed_data = self.analyse()
+        link = context.user_data['link']
+        max_comments = context.user_data['max_comments']
+        logging.info("link={}\nmax_comments={}".format(link, max_comments))
+        analysed_data = self.analyse(link, max_comments)
 
         update.message.reply_text(
             analysed_data
