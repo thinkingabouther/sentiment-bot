@@ -95,7 +95,7 @@ class Bot:
 
         context.user_data["max_comments"] = update.message.text
 
-        analysed_data = self.analyse(context['link'], context['max_comments'])
+        analysed_data = self.analyse(context.user_data['link'], context.user_data['max_comments'])
 
         update.message.reply_text(
             analysed_data
