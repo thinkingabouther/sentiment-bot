@@ -7,5 +7,5 @@ class SentimentAnalyzer:
         self.text_analytics_client = TextAnalyticsClient(endpoint=endpoint, credential=AzureKeyCredential(key))
 
     def get_sentiment(self, text: str):
-        docs = self.text_analytics_client.analyze_sentiment(text, show_opinion_mining=True)
+        docs = self.text_analytics_client.analyze_sentiment([text], show_opinion_mining=True)
         return docs
