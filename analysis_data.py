@@ -9,3 +9,4 @@ class AnalysisData:
         self.positive_pc = positive_pc
         self.negative_pc = negative_pc
         self.neutral_pc = neutral_pc
+        self.overall = overall
