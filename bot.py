@@ -3,6 +3,7 @@ import os
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 from sentiment_analyser import SentimentAnalyzer
+from urllib.parse import urlparse
 
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['TOKEN']
@@ -32,7 +33,7 @@ class Bot:
         chat_id = update.message.chat.id
         update.message.reply_text(self.sentiment_analyser.get_sentiment('Hello').sentiment)
 
-    def sentiment(update: Update, context: CallbackContext):
+    def sentiment(self, update: Update, context: CallbackContext):
         raw_url = update.message.text
         url = urlparse(raw_url)
         update.message.reply_text(url.netloc + url.path)
