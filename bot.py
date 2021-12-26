@@ -52,11 +52,6 @@ class Bot:
         conv_handler = ConversationHandler(
             entry_points=[CommandHandler('start', start)],
             states={
-                ENTERING_LINK: [
-                    MessageHandler(
-                        Filters.text, enter_link
-                    )
-                ],
                 ENTERING_MAX_COMMENTS: [
                     MessageHandler(
                         Filters.text, enter_max_comments
