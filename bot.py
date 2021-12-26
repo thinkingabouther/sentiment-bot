@@ -34,10 +34,17 @@ class Bot:
         update.message.reply_text("bop умер, не пишите")
 
     def never_gonna(self, update, context):
-        positive, neutral, negative = self.sentiment_aggregator.aggregate_sentiments("dQw4w9WgXcQ")
-        reply_text = "Положительный = {}" \
-                     "Нейтральный = {}" \
-                     "Отрицательный = {}".format(positive, neutral, negative);
+        scores = self.sentiment_aggregator.aggregate_sentiments("dQw4w9WgXcQ")
+        reply_text = "🤔 Что мы узнали:\n" \
+                     "🤯 Проанализировано комментариев {}\n" \
+                     "👍 Положительных комментариев {}\n" \
+                     "👌 Нейтральных комментариев {}\n" \
+                     "👎 Отрицательных комментариев {}\n" \
+                     "‍👀 Степень уверенности в моих ответах\n" \
+                     "⬆ Медианная уверенность в том, что комментарии положительные {}\n" \
+                     "➡ Нейтральные {} \n" \
+                     "⬇ Отрицательные {}" \
+            .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative, scores.positive_pc, scores.neutral_pc, scores.negative_pc);
         update.message.reply_text(reply_text)
 
 
