@@ -27,7 +27,7 @@ def main():
 
 def bop(update: Update, context: CallbackContext):
     chat_id = update.message.chat.id
-    update.message.reply_text(sentiment_analyser.get_sentiment('Hello'))
+    update.message.reply_text(sentiment_analyser.get_sentiment('Hello').sentiment)
 
 
 if __name__ == '__main__':
