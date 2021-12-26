@@ -2,10 +2,13 @@ import os
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
+from sentiment_analyser import SentimentAnalyzer
 
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['TOKEN']
 APP_URL = os.environ['APP_URL']
+endpoint = os.environ['AZURE_ENDPOINT']
+key = os.environ['AZURE_API_KEY']
 
 
 def main():
@@ -27,3 +30,4 @@ def bop(update: Update, context: CallbackContext):
 
 if __name__ == '__main__':
     main()
+    print(SentimentAnalyzer(endpoint, key).get_sentiment('Hello'))
