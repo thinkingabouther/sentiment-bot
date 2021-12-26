@@ -9,6 +9,7 @@ TOKEN = os.environ['TOKEN']
 APP_URL = os.environ['APP_URL']
 endpoint = os.environ['AZURE_ENDPOINT']
 key = os.environ['AZURE_API_KEY']
+sentiment_analyser = SentimentAnalyzer(endpoint, key)
 
 
 def main():
@@ -26,8 +27,8 @@ def main():
 
 def bop(update: Update, context: CallbackContext):
     chat_id = update.message.chat.id
-    update.message.reply_text('Hello, {}'.format(chat_id))
+    update.message.reply_text(sentiment_analyser.get_sentiment('Hello'))
+
 
 if __name__ == '__main__':
     main()
-    print(SentimentAnalyzer(endpoint, key).get_sentiment('Hello'))
