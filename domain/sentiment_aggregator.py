@@ -1,7 +1,7 @@
-from sentiment_analyser import SentimentAnalyzer
-from youtube_reader import YouTubeReader
+from domain.sentiment_analyser import SentimentAnalyzer
+from domain.youtube_reader import YouTubeReader
 from statistics import median
-from analysis_data import AnalysisData
+from domain.analysis_data import AnalysisData
 
 
 class SentimentAggregator:
