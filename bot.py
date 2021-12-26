@@ -20,7 +20,7 @@ class Bot:
         dp = self.updater.dispatcher
 
         dp.add_handler(CommandHandler('bop', self.bop))
-        dp.add_handler(CommandHandler('never_gonna', self.never_gonna()))
+        dp.add_handler(CommandHandler('never_gonna', self.never_gonna))
 
         self.updater.start_webhook(listen="0.0.0.0",
                                    port=int(port),
