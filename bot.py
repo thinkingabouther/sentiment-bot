@@ -24,9 +24,7 @@ def start(update: Update, context: CallbackContext) -> int:
 def enter_max_comments(update: Update, context: CallbackContext) -> int:
     """Ask the user for a max comments count."""
     context.user_data['link'] = update.message.text
-    update.message.reply_text(
-        'Введите максимальное количество анализируемых комментариев"'
-    )
+    update.message.reply_text('Введите максимальное количество анализируемых комментариев')
 
     return GETTING_RESULT
 
@@ -34,7 +32,7 @@ def done(update: Update, context: CallbackContext) -> int:
     """Display the result."""
 
     if not update.message.text[1:].isdigit():
-        update.message.reply_text("Это не число")
+        update.message.reply_text("Введите целое число")
         return GETTING_RESULT
 
     context.user_data["max_comments"] = update.message.text
