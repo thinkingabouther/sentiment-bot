@@ -2,4 +2,3 @@ python-telegram-bot==12.7
 requests==2.26.0
 azure.core
 azure.ai.textanalytics
-urllib
