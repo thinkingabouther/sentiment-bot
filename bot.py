@@ -16,7 +16,7 @@ ENTERING_LINK, ENTERING_MAX_COMMENTS, GETTING_RESULT = range(3)
 def start(update: Update, context: CallbackContext) -> int:
     """Start the conversation and ask user for input."""
     update.message.reply_text(
-        "Введите ссылке на YouTube видео"
+        "Введите ссылку на YouTube видео"
     )
     return ENTERING_MAX_COMMENTS
     
