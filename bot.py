@@ -3,7 +3,6 @@ import os
 from telegram import Update
 from sentiment_aggregator import SentimentAggregator
 from telegram.ext import Updater, CommandHandler, CallbackContext, ConversationHandler, MessageHandler, Filters
-from urllib.parse import urlparse
 
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['TOKEN']
@@ -15,35 +14,6 @@ YOUTUBE_KEY = os.environ['YOUTUBE_KEY']
 
 ENTERING_LINK, ENTERING_MAX_COMMENTS, GETTING_RESULT = range(3)
 
-def start(update: Update, context: CallbackContext) -> int:
-    """Start the conversation and ask user for input."""
-    update.message.reply_text(
-        "Введите ссылку на YouTube видео"
-    )
-    return ENTERING_MAX_COMMENTS
-
-
-def enter_max_comments(update: Update, context: CallbackContext) -> int:
-    """Ask the user for a max comments count."""
-    context.user_data['link'] = update.message.text
-    update.message.reply_text('Введите максимальное количество анализируемых комментариев')
-
-    return GETTING_RESULT
-
-def done(update: Update, context: CallbackContext) -> int:
-    """Display the result."""
-
-    if not update.message.text[1:].isdigit():
-        update.message.reply_text("Введите целое число")
-        return GETTING_RESULT
-
-    context.user_data["max_comments"] = update.message.text
-
-    update.message.reply_text(
-        context.user_data["max_comments"] + " " + context.user_data["link"]
-    )
-    context.user_data.clear()
-    return ConversationHandler.END
 
 class Bot:
     def __init__(self, port, token, app_url, endpoint, key, youtube_endpoint, youtube_key):
@@ -55,25 +25,23 @@ class Bot:
         dp.add_handler(CommandHandler('sentiment', self.sentiment))
 
         conv_handler = ConversationHandler(
-            entry_points=[CommandHandler('start', start)],
+            entry_points=[CommandHandler('start', self.start)],
             states={
                 ENTERING_MAX_COMMENTS: [
                     MessageHandler(
-                        Filters.text, enter_max_comments
+                        Filters.text, self.enter_max_comments
                     )
                 ],
                 GETTING_RESULT: [
                     MessageHandler(
-                        Filters.text, done,
+                        Filters.text, self.done,
                     )
                 ],
             },
-            fallbacks=[MessageHandler(Filters.regex('^Done$'), done)],
+            fallbacks=[MessageHandler(Filters.regex('^Done$'), self.done)],
         )
 
         dp.add_handler(conv_handler)
-
-        dp.add_handler(CommandHandler('never_gonna', self.never_gonna))
 
         self.updater.start_webhook(listen="0.0.0.0",
                                    port=int(port),
@@ -87,19 +55,50 @@ class Bot:
     def bop(self, update: Update, context: CallbackContext):
         update.message.reply_text("bop умер, не пишите")
 
-    def never_gonna(self, update, context):
+    def analyse(self):
         scores = self.sentiment_aggregator.aggregate_sentiments("dQw4w9WgXcQ")
-        reply_text = "🤔 Что мы узнали:\n" \
-                     "🤯 Проанализировано комментариев {}\n" \
-                     "👍 Положительных комментариев {}\n" \
-                     "👌 Нейтральных комментариев {}\n" \
-                     "👎 Отрицательных комментариев {}\n" \
-                     "‍👀 Степень уверенности в моих ответах\n" \
-                     "⬆ Медианная уверенность в том, что комментарии положительные {}\n" \
-                     "➡ Нейтральные {} \n" \
-                     "⬇ Отрицательные {}" \
-            .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative, scores.positive_pc, scores.neutral_pc, scores.negative_pc);
-        update.message.reply_text(reply_text)
+        return "🤔 Что мы узнали:\n" \
+               "🤯 Проанализировано комментариев {}\n" \
+               "👍 Положительных комментариев {}\n" \
+               "👌 Нейтральных комментариев {}\n" \
+               "👎 Отрицательных комментариев {}\n" \
+               "‍👀 Степень уверенности в моих ответах\n" \
+               "⬆ Медианная уверенность в том, что комментарии положительные {}\n" \
+               "➡ Нейтральные {} \n" \
+               "⬇ Отрицательные {}" \
+            .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative,
+                    scores.positive_pc, scores.neutral_pc, scores.negative_pc);
+
+    def start(self, update: Update, context: CallbackContext) -> int:
+        """Start the conversation and ask user for input."""
+        update.message.reply_text(
+            "Введите ссылку на YouTube видео"
+        )
+        return ENTERING_MAX_COMMENTS
+
+    def enter_max_comments(self, update: Update, context: CallbackContext) -> int:
+        """Ask the user for a max comments count."""
+        context.user_data['link'] = update.message.text
+        update.message.reply_text('Введите максимальное количество анализируемых комментариев')
+
+        return GETTING_RESULT
+
+    def done(self, update: Update, context: CallbackContext) -> int:
+        """Display the result."""
+
+        if not update.message.text[1:].isdigit():
+            update.message.reply_text("Введите целое число")
+            return GETTING_RESULT
+
+        context.user_data["max_comments"] = update.message.text
+
+        analysed_data = self.analyse()
+
+        update.message.reply_text(
+            analysed_data
+        )
+        context.user_data.clear()
+        return ConversationHandler.END
 
 
 if __name__ == '__main__':
