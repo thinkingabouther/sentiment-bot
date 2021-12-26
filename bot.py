@@ -43,9 +43,8 @@ class Bot:
                      "‍👀 Степень уверенности в моих ответах\n" \
                      "⬆ Медианная уверенность в том, что комментарии положительные {}\n" \
                      "➡ Нейтральные {} \n" \
-                     "⬇ Отрицательные {}\n" \
-                     "ИТОГ!!! Видео: {}" \
-            .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative, scores.positive_pc, scores.neutral_pc, scores.negative_pc, scores.overall);
+                     "⬇ Отрицательные {}" \
+            .format(scores.count, scores.count_positive, scores.count_neutral, scores.count_negative, scores.positive_pc, scores.neutral_pc, scores.negative_pc);
         update.message.reply_text(reply_text)
 
 

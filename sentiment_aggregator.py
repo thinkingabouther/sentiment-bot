@@ -17,19 +17,12 @@ class SentimentAggregator:
         negative_count = sum(1 for i in sentiment_results if i.sentiment == "negative")
         neutral_count = sum(1 for i in sentiment_results if i.sentiment == "neutral")
 
-        overall = "neutral"
-        max_count = max(positive_count, negative_count, neutral_count)
-        if positive_count == max_count:
-            overall = "positive"
-        elif negative_count == max_count:
-            overall = "negative"
-
         positive_scores = [sentiment.confidence_scores.positive for sentiment in sentiment_results]
         negative_scores = [sentiment.confidence_scores.negative for sentiment in sentiment_results]
         neutral_scores = [sentiment.confidence_scores.neutral for sentiment in sentiment_results]
 
         return AnalysisData(len(sentiment_results), positive_count, negative_count, neutral_count,
-                            positive_scores, negative_scores, neutral_scores, overall)
+                            median(positive_scores), median(negative_scores), median(neutral_scores))
 
     def get_sentiments_list(self, video_id):
         comments = self.youtube_reader.read_comments_by_id(video_id)
