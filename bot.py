@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -94,8 +95,10 @@ class Bot:
             return GETTING_RESULT
 
         context.user_data["max_comments"] = update.message.text
-
-        analysed_data = self.analyse(context.user_data['link'], context.user_data['max_comments'])
+        link = context.user_data['link']
+        max_comments = context.user_data['max_comments']
+        logging.info("link={}\nmax_comments={}".format(link, max_comments))
+        analysed_data = self.analyse(link, max_comments)
 
         update.message.reply_text(
             analysed_data
