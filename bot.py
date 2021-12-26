@@ -8,35 +8,36 @@ from urllib.parse import urlparse
 PORT = int(os.environ.get('PORT', 5000))
 TOKEN = os.environ['TOKEN']
 APP_URL = os.environ['APP_URL']
-endpoint = os.environ['AZURE_ENDPOINT']
-key = os.environ['AZURE_API_KEY']
-sentiment_analyser = SentimentAnalyzer(endpoint, key)
+ENDPOINT = os.environ['AZURE_ENDPOINT']
+KEY = os.environ['AZURE_API_KEY']
 
 
-def main():
-    updater = Updater(TOKEN, use_context=True)
-    dp = updater.dispatcher
+class Bot:
+    def __init__(self, port, token, app_url, endpoint, key):
+        self.sentiment_analyser = SentimentAnalyzer(endpoint, key)
+        self.updater = Updater(TOKEN, use_context=True)
+        dp = self.updater.dispatcher
 
-    dp.add_handler(CommandHandler('bop', bop))
+        dp.add_handler(CommandHandler('bop', self.bop))
+        dp.add_handler(CommandHandler('sentiment', self.sentiment))
 
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(PORT),
-                          url_path=TOKEN)
-    updater.bot.setWebhook(APP_URL + TOKEN)
-    updater.idle()
+        self.updater.start_webhook(listen="0.0.0.0",
+                                   port=int(port),
+                                   url_path=token)
+        self.updater.bot.setWebhook(app_url + token)
 
+    def idle(self):
+        self.updater.idle()
 
-def bop(update: Update, context: CallbackContext):
-    chat_id = update.message.chat.id
-    update.message.reply_text(sentiment_analyser.get_sentiment('Hello').sentiment)
+    def bop(self, update: Update, context: CallbackContext):
+        chat_id = update.message.chat.id
+        update.message.reply_text(self.sentiment_analyser.get_sentiment('Hello').sentiment)
 
-def sentiment(update: Update, context: CallbackContext):
-    raw_url = update.message.text
-    url = urlparse(raw_url)
-    
-    update.message.reply_text(url.netloc + url.path)
-
-
+    def sentiment(update: Update, context: CallbackContext):
+        raw_url = update.message.text
+        url = urlparse(raw_url)
+        update.message.reply_text(url.netloc + url.path)
 
 if __name__ == '__main__':
-    main()
+    bot = Bot(PORT, TOKEN, APP_URL, ENDPOINT, KEY)
+    bot.idle()
