@@ -1,6 +1,6 @@
 import logging
 import os
-import re
+from urllib.parse import urlparse, parse_qs
 
 from telegram import Update
 from domain.sentiment_aggregator import SentimentAggregator
@@ -57,10 +57,8 @@ class Bot:
         update.message.reply_text("bop умер, не пишите")
 
     def analyse(self, link, max_comments):
-        pattern = r"^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*"
-        p = re.compile(pattern)
-        video_id = p.search(link)
-        scores = self.sentiment_aggregator.aggregate_sentiments(video_id.group(0), max_comments)
+        video_id = parse_qs(urlparse(link).query)['v'][0]
+        scores = self.sentiment_aggregator.aggregate_sentiments(video_id, max_comments)
         return "🤔 Что мы узнали:\n" \
                "🤯 Проанализировано комментариев {}\n" \
                "👍 Положительных комментариев {}\n" \
