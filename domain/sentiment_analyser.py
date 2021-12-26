@@ -15,4 +15,4 @@ class SentimentAnalyzer:
             batch = docs_list[idx: idx + batch_size]
             docs = self.text_analytics_client.analyze_sentiment(batch, show_opinion_mining=True)
             result += docs
-        return result
+        return [doc for doc in result if not doc.is_error]
